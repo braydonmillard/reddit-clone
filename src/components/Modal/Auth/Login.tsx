@@ -1,7 +1,10 @@
 import { authModalState } from "@/src/atoms/authModalAtom";
+import { FIREBASE_ERRORS } from "@/src/firebase/errors";
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
+import { auth } from "../../../firebase/clientApp";
 
 type LoginProps = {};
 
@@ -11,9 +14,15 @@ const Login: React.FC<LoginProps> = () => {
     email: "",
     password: "",
   });
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
 
   // Firebase logic
-  const onSubmit = () => {};
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    signInWithEmailAndPassword(loginForm.email, loginForm.password);
+  };
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // update form state
@@ -27,12 +36,12 @@ const Login: React.FC<LoginProps> = () => {
     <form onSubmit={onSubmit}>
       <Input
         required
-        name="email"
-        placeholder="email"
-        type="email"
+        name='email'
+        placeholder='email'
+        type='email'
         mb={2}
         onChange={onChange}
-        fontSize="10pt"
+        fontSize='10pt'
         _placeholder={{ color: "gray.500" }}
         _hover={{
           bg: "white",
@@ -45,15 +54,15 @@ const Login: React.FC<LoginProps> = () => {
           border: "1px solid",
           borderColor: "blue.500",
         }}
-        bg="gray.50"
+        bg='gray.50'
       />
       <Input
         required
-        name="password"
-        placeholder="password"
-        type="password"
+        name='password'
+        placeholder='password'
+        type='password'
         mb={2}
-        fontSize="10pt"
+        fontSize='10pt'
         _placeholder={{ color: "gray.500" }}
         _hover={{
           bg: "white",
@@ -66,18 +75,21 @@ const Login: React.FC<LoginProps> = () => {
           border: "1px solid",
           borderColor: "blue.500",
         }}
-        bg="gray.50"
+        bg='gray.50'
         onChange={onChange}
       />
-      <Button width="100%" height="36px" mt={2} mb={2} type="submit">
+      <Text>
+        {FIREBASE_ERRORS[error?.message as keyof typeof FIREBASE_ERRORS]}
+      </Text>
+      <Button width='100%' height='36px' mt={2} mb={2} type='submit'>
         Log In
       </Button>
-      <Flex fontSize="9pt" justifyContent="center">
+      <Flex fontSize='9pt' justifyContent='center'>
         <Text mr={1}>New Here?</Text>
         <Text
-          color="blue.500"
+          color='blue.500'
           fontWeight={700}
-          cursor="pointer"
+          cursor='pointer'
           onClick={() =>
             setAuthModalState((prev) => ({
               ...prev,
